@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Arsip Dokumen Tersimpan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="container mt-4">
+
+<h2>📁 Arsip Dokumen Tersimpan</h2>
+
+<form method="get" action="{{ url_for('list_documents') }}" class="border rounded p-3 mb-4 bg-light">
+  <div class="row g-2 align-items-end">
+
+    <!-- Kategori -->
+    <div class="col-md-3">
+      <label class="form-label">Kategori:</label>
+      <select name="category" class="form-select">
+        <option value="">-- Semua Kategori --</option>
+        {% for c in categories %}
+          <option value="{{ c }}" {% if c==selected_category %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Jenis Perusahaan -->
+    <div class="col-md-3">
+      <label class="form-label">Jenis Perusahaan:</label>
+      <select name="company_type" class="form-select">
+        <option value="">-- Semua Jenis --</option>
+        {% for t in company_types %}
+          <option value="{{ t }}" {% if t==selected_company_type %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Nama Perusahaan -->
+    <div class="col-md-3">
+      <label class="form-label">Nama&nbsp;Perusahaan:</label>
+      <select name="company_name" class="form-select">
+        <option value="">-- Semua Perusahaan --</option>
+        {% for comp in companies %}
+          <option value="{{ comp }}" {% if comp==selected_company %}selected{% endif %}>{{ comp }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Range tanggal -->
+    <div class="col-md-3">
+      <label class="form-label">Dari:</label>
+      <input type="date" name="date_from" class="form-control" value="{{ date_from }}">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Sampai:</label>
+      <input type="date" name="date_to" class="form-control" value="{{ date_to }}">
+    </div>
+  </div>
+
+  <hr class="my-3">
+
+  <!-- Sorting -->
+  <div class="row g-2 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label">Urut berdasarkan:</label>
+      <select name="sort_by" class="form-select">
+        <option value="id"            {% if sort_by=='id' %}selected{% endif %}>ID</option>
+        <option value="filename"      {% if sort_by=='filename' %}selected{% endif %}>Nama&nbsp;File</option>
+        <option value="category"      {% if sort_by=='category' %}selected{% endif %}>Kategori</option>
+        <option value="company_type"  {% if sort_by=='company_type' %}selected{% endif %}>Jenis&nbsp;Perusahaan</option>
+        <option value="company_name"  {% if sort_by=='company_name' %}selected{% endif %}>Nama&nbsp;Perusahaan</option>
+        <option value="issued_date"   {% if sort_by=='issued_date' %}selected{% endif %}>Tanggal&nbsp;Terbit</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label">Arah:</label>
+      <select name="sort_dir" class="form-select">
+        <option value="asc"  {% if sort_dir=='asc' %}selected{% endif %}>⬆️ Asc</option>
+        <option value="desc" {% if sort_dir=='desc' %}selected{% endif %}>⬇️ Desc</option>
+      </select>
+    </div>
+    <div class="col-md-2 d-grid">
+      <button class="btn btn-primary mt-4">Terapkan</button>
+    </div>
+
+    <!-- ✅ BUTTONS HERE -->
+    <div class="col-md text-end">
+      <a href="/upload-form" class="btn btn-success mt-4">+ Unggah Dokumen Baru</a>
+      <a href="{{ url_for('batch_upload_bp.show') }}" class="btn btn-primary mt-4 ms-2">📦 Batch Upload PDFs</a>
+    </div>
+  </div>
+</form>
+
+{% if documents %}
+<div class="table-responsive">
+  <table class="table table-bordered table-striped align-middle">
+    <thead class="table-light text-center">
+      <tr>
+        <th>ID</th>
+        <th>Nama File</th>
+        <th>Kategori</th>
+        <th>Jenis&nbsp;Perusahaan</th>
+        <th>Nama&nbsp;Perusahaan</th>
+        <th>Tanggal&nbsp;Terbit</th>
+        <th>Catatan</th>
+        <th style="width:130px;">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for d in documents %}
+      <tr>
+        <td class="text-center">{{ d[0] }}</td>
+        <td><a href="{{ url_for('uploaded_file', filename=d[1]) }}" target="_blank">{{ d[1] }}</a></td>
+        <td>{{ d[2] }}</td>
+        <td>{{ d[4] }}</td>
+        <td>{{ d[5] }}</td>
+        <td>{{ d[6] | datetimeformat }}</td>
+        <td>{{ d[7] }}</td>
+        <td class="text-center">
+          <a href="{{ url_for('edit_metadata', doc_id=d[0]) }}" class="btn btn-sm btn-outline-primary">✏️</a>
+          <a href="{{ url_for('delete_document', doc_id=d[0]) }}"
+             class="btn btn-sm btn-outline-danger"
+             onclick="return confirm('Hapus dokumen ini?')">🗑️</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="alert alert-warning">Tidak ada dokumen yang ditemukan.</p>
+{% endif %}
+
+</body>
+</html>

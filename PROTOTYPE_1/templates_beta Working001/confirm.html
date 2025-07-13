@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Document Info</title>
+</head>
+<body>
+    <h2>Review & Edit Document Metadata</h2>
+
+    <p><strong>Filename:</strong> {{ filename }}</p>
+
+    <form action="/save" method="post">
+        <input type="hidden" name="filename" value="{{ filename }}">
+        
+        <label>Document Type:</label>
+        <select name="doc_type">
+            <option>Akta Pendirian</option>
+            <option>Sertifikat Kemenkumham</option>
+            <option>NIB</option>
+            <option>NPWP</option>
+            <option>Lainnya</option>
+        </select><br><br>
+
+        <label>Company Name:</label><br>
+        <input type="text" name="company_name"><br><br>
+
+        <label>Date (if available):</label><br>
+        <input type="date" name="issued_date"><br><br>
+
+        <label>Description / Notes:</label><br>
+        <textarea name="notes" rows="5" cols="60">{{ extracted_text }}</textarea><br><br>
+
+        <button type="submit">Save Document Info</button>
+    </form>
+</body>
+</html>

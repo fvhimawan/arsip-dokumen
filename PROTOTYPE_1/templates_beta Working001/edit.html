@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Document</title>
+</head>
+<body>
+    <h2>Edit Document Metadata</h2>
+
+    <form action="/update/{{ doc[0] }}" method="post">
+        <label>Filename:</label><br>
+        <input type="text" name="filename" value="{{ doc[1] }}"><br><br>
+
+        <label>Document Type:</label><br>
+        <input type="text" name="doc_type" value="{{ doc[2] }}"><br><br>
+
+        <label>Company Name:</label><br>
+        <input type="text" name="company_name" value="{{ doc[3] }}"><br><br>
+
+        <label>Issued Date:</label><br>
+        <input type="date" name="issued_date" value="{{ doc[4] }}"><br><br>
+
+        <label>Notes:</label><br>
+        <textarea name="notes" rows="5" cols="60">{{ doc[5] }}</textarea><br><br>
+
+        <button type="submit">💾 Update</button>
+    </form>
+</body>
+</html>

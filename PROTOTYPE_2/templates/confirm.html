@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Document Metadata</title>
+</head>
+<body>
+    <h2>📝 Confirm Document Metadata</h2>
+    <p><strong>Filename:</strong> {{ filename }}</p>
+
+    <form method="POST" action="/save">
+        <input type="hidden" name="filename" value="{{ filename }}">
+
+        <label>Category:</label>
+        <select name="category">
+            <option value="Legalitas">Legalitas</option>
+            <option value="Perpajakan">Perpajakan</option>
+            <option value="Aset">Aset</option>
+            <option value="Izin Usaha">Izin Usaha</option>
+            <option value="Perbankan">Perbankan</option>
+            <option value="Kontrak">Kontrak</option>
+            <option value="Laporan Keuangan">Laporan Keuangan</option>
+            <option value="SDM & Ketenagakerjaan">SDM & Ketenagakerjaan</option>
+            <option value="Asuransi">Asuransi</option>
+            <option value="Korespondensi">Korespondensi</option>
+        </select>
+        or Custom: <input type="text" name="custom_category"><br><br>
+
+        <label>Company Name:</label>
+        <input type="text" name="company_name" required><br><br>
+
+        <label>Issued Date:</label>
+        <input type="date" name="issued_date"><br><br>
+
+        <label>Notes (optional):</label><br>
+        <textarea name="notes" rows="4" cols="60"></textarea><br><br>
+
+        <h3>🔍 Auto Extracted Content (First Page):</h3>
+        <pre style="background:#f5f5f5; border:1px solid #ccc; padding:10px;">{{ extracted_text }}</pre>
+
+        <button type="submit">Save Document</button>
+    </form>
+    <br>
+    <a href="/upload-form">← Cancel</a>
+</body>
+</html>

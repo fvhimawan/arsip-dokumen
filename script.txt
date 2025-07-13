@@ -1,0 +1,157 @@
+python Arsip_beta_001_8Jul2025.py
+
+Output folder: C:\Program Files\Tesseract-OCR
+Extract: tesseract.exe
+Extract: libtesseract-5.dll
+Extract: libLerc.dll
+Extract: libarchive-13.dll
+Extract: libb2-1.dll
+Extract: libbrotlicommon.dll
+Extract: libbrotlidec.dll
+Extract: libbz2-1.dll
+Extract: libcairo-2.dll
+Extract: libcrypto-3-x64.dll
+Extract: libcurl-4.dll
+Extract: libdatrie-1.dll
+Extract: libdeflate.dll
+Extract: libexpat-1.dll
+Extract: libffi-8.dll
+Extract: libfontconfig-1.dll
+Extract: libfreetype-6.dll
+Extract: libfribidi-0.dll
+Extract: libgcc_s_seh-1.dll
+Extract: libgif-7.dll
+Extract: libgio-2.0-0.dll
+Extract: libglib-2.0-0.dll
+Extract: libgmodule-2.0-0.dll
+Extract: libgobject-2.0-0.dll
+Extract: libgraphite2.dll
+Extract: libharfbuzz-0.dll
+Extract: libiconv-2.dll
+Extract: libicudt75.dll
+Extract: libicuin75.dll
+Extract: libicuuc75.dll
+Extract: libidn2-0.dll
+Extract: libintl-8.dll
+Extract: libjbig-0.dll
+Extract: libjpeg-8.dll
+Extract: libleptonica-6.dll
+Extract: liblz4.dll
+Extract: liblzma-5.dll
+Extract: libopenjp2-7.dll
+Extract: libpango-1.0-0.dll
+Extract: libpangocairo-1.0-0.dll
+Extract: libpangoft2-1.0-0.dll
+Extract: libpangowin32-1.0-0.dll
+Extract: libpcre2-8-0.dll
+Extract: libpixman-1-0.dll
+Extract: libpng16-16.dll
+Extract: libpsl-5.dll
+Extract: libsharpyuv-0.dll
+Extract: libssh2-1.dll
+Extract: libstdc++-6.dll
+Extract: libthai-0.dll
+Extract: libtiff-6.dll
+Extract: libunistring-5.dll
+Extract: libwebp-7.dll
+Extract: libwebpmux-3.dll
+Extract: libwinpthread-1.dll
+Extract: libzstd.dll
+Extract: zlib1.dll
+Extract: winpath.exe
+Extract: ambiguous_words.1.html
+Extract: classifier_tester.1.html
+Extract: cntraining.1.html
+Extract: combine_lang_model.1.html
+Extract: combine_tessdata.1.html
+Extract: dawg2wordlist.1.html
+Extract: lstmeval.1.html
+Extract: lstmtraining.1.html
+Extract: merge_unicharsets.1.html
+Extract: mftraining.1.html
+Extract: set_unicharset_properties.1.html
+Extract: shapeclustering.1.html
+Extract: tesseract.1.html
+Extract: text2image.1.html
+Extract: unicharambigs.5.html
+Extract: unicharset.5.html
+Extract: unicharset_extractor.1.html
+Extract: wordlist2dawg.1.html
+Create folder: C:\Program Files\Tesseract-OCR\tessdata
+Output folder: C:\Program Files\Tesseract-OCR\tessdata
+Extract: pdf.ttf
+Create folder: C:\Program Files\Tesseract-OCR\tessdata\configs
+Output folder: C:\Program Files\Tesseract-OCR\tessdata\configs
+Extract: alto
+Extract: ambigs.train
+Extract: api_config
+Extract: bigram
+Extract: box.train
+Extract: box.train.stderr
+Extract: digits
+Extract: get.images
+Extract: hocr
+Extract: inter
+Extract: kannada
+Extract: linebox
+Extract: logfile
+Extract: lstm.train
+Extract: lstmbox
+Extract: lstmdebug
+Extract: makebox
+Extract: page
+Extract: pdf
+Extract: quiet
+Extract: rebox
+Extract: strokewidth
+Extract: tsv
+Extract: txt
+Extract: unlv
+Extract: wordstrbox
+Create folder: C:\Program Files\Tesseract-OCR\tessdata\script
+Create folder: C:\Program Files\Tesseract-OCR\tessdata\tessconfigs
+Output folder: C:\Program Files\Tesseract-OCR\tessdata\tessconfigs
+Extract: batch
+Extract: batch.nochop
+Extract: matdemo
+Extract: msdemo
+Extract: nobatch
+Extract: segdemo
+Create folder: C:\Program Files\Tesseract-OCR\doc
+Output folder: C:\Program Files\Tesseract-OCR\doc
+Extract: AUTHORS
+Extract: LICENSE
+Extract: README.md
+Output folder: C:\Program Files\Tesseract-OCR\tessdata
+Extract: ScrollView.jar
+Extract: jaxb-api-2.3.1.jar
+Extract: piccolo2d-core-3.0.1.jar
+Extract: piccolo2d-extras-3.0.1.jar
+Output folder: C:\Program Files\Tesseract-OCR
+Extract: ambiguous_words.exe
+Extract: classifier_tester.exe
+Extract: cntraining.exe
+Extract: combine_lang_model.exe
+Extract: combine_tessdata.exe
+Extract: dawg2wordlist.exe
+Extract: lstmeval.exe
+Extract: lstmtraining.exe
+Extract: merge_unicharsets.exe
+Extract: mftraining.exe
+Extract: set_unicharset_properties.exe
+Extract: shapeclustering.exe
+Extract: text2image.exe
+Extract: unicharset_extractor.exe
+Extract: wordlist2dawg.exe
+Created uninstaller: C:\Program Files\Tesseract-OCR\tesseract-uninstall.exe
+Output folder: C:\Program Files\Tesseract-OCR
+Create folder: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Tesseract-OCR
+Create shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Tesseract-OCR\Console.lnk
+Create shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Tesseract-OCR\Dokumentation.lnk
+Create shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Tesseract-OCR\Homepage.lnk
+Create shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Tesseract-OCR\ReadMe.lnk
+Create shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Tesseract-OCR\FAQ.lnk
+Create shortcut: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Tesseract-OCR\Uninstall.lnk
+Download: eng language file
+Download: osd language file
+Completed

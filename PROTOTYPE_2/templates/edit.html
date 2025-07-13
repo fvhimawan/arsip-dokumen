@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Document</title>
+</head>
+<body>
+    <h2>Edit Metadata for Document #{{ doc[0] }}</h2>
+    <form method="POST">
+        <label>Filename: </label>
+        <b>{{ doc[1] }}</b><br><br>
+
+        <label>Category:</label>
+        <select name="category">
+            <option value="Legalitas" {% if doc[2] == 'Legalitas' %}selected{% endif %}>Legalitas</option>
+            <option value="Perpajakan" {% if doc[2] == 'Perpajakan' %}selected{% endif %}>Perpajakan</option>
+            <option value="Aset" {% if doc[2] == 'Aset' %}selected{% endif %}>Aset</option>
+            <option value="Izin Usaha" {% if doc[2] == 'Izin Usaha' %}selected{% endif %}>Izin Usaha</option>
+        </select>
+        or Custom: <input type="text" name="custom_category"><br><br>
+
+        <label>Document Type:</label>
+        <input type="text" name="doc_type" value="{{ doc[3] }}" required><br><br>
+
+        <label>Company Name:</label>
+        <input type="text" name="company_name" value="{{ doc[4] }}" required><br><br>
+
+        <label>Issued Date:</label>
+        <input type="date" name="issued_date" value="{{ doc[5] }}"><br><br>
+
+        <label>Notes:</label><br>
+        <textarea name="notes" rows="4" cols="50">{{ doc[6] }}</textarea><br><br>
+
+        <input type="submit" value="Save Changes">
+    </form>
+    <br>
+    <a href="/documents">← Back to Archive</a>
+</body>
+</html>

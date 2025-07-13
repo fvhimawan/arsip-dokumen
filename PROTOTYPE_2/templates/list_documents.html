@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document Archive</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>📁 Document Archive</h2>
+
+    <form method="get" action="/documents">
+        <label>Filter by Category:</label>
+        <select name="category">
+            <option value="">-- All --</option>
+            {% for cat in categories %}
+                <option value="{{ cat }}" {% if cat == selected_category %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filter</button>
+        <a href="/upload-form">+ Upload New Document</a>
+    </form>
+
+    <hr>
+    {% if documents %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Filename</th>
+                <th>Category</th>
+                <th>Document Type</th>
+                <th>Company</th>
+                <th>Issued Date</th>
+                <th>Notes</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in documents %}
+            <tr>
+                <td>{{ doc[0] }}</td>
+                <td><a href="/view/{{ doc[1] }}" target="_blank">{{ doc[1] }}</a></td>
+                <td>{{ doc[2] }}</td>
+                <td>{{ doc[3] }}</td>
+                <td>{{ doc[4] }}</td>
+                <td>{{ doc[5] }}</td>
+                <td>{{ doc[6] }}</td>
+                <td>
+                    <a href="/edit/{{ doc[0] }}">✏️ Edit</a> |
+                    <a href="/delete/{{ doc[0] }}" onclick="return confirm('Delete this document?')">🗑️ Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No documents found.</p>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document Archive</title>
+</head>
+<body>
+    <h2>📄 Company Document Archive</h2>
+
+    <!-- Upload Button -->
+    <p>
+        <a href="/upload-form">📤 Upload New Document</a>
+    </p>
+
+    <!-- Search -->
+    <form method="get" action="/documents">
+        <input type="text" name="search" placeholder="Search..." value="{{ search }}">
+        <button type="submit">🔍 Search</button>
+    </form>
+
+    <!-- Document Count -->
+    <p><strong>Total documents:</strong> {{ documents | length }}</p>
+
+    <!-- Table -->
+    <table border="1" cellpadding="5">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Filename</th>
+                <th>Type</th>
+                <th>Company</th>
+                <th>Issued Date</th>
+                <th>Notes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in documents %}
+            <tr>
+                <td>{{ doc[0] }}</td>
+                <td>{{ doc[1] }}</td>
+                <td>{{ doc[2] }}</td>
+                <td>{{ doc[3] }}</td>
+                <td>{{ doc[4] }}</td>
+                <td>{{ doc[5] }}</td>
+                <td>
+                    <a href="/edit/{{ doc[0] }}">✏️ Edit</a> |
+                    <a href="/delete/{{ doc[0] }}" onclick="return confirm('Delete this document?');">🗑️ Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

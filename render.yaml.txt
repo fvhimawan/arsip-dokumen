@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: arsip-dokumen
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python Arsip_beta_001_8Jul2025.py"
+    envVars:
+      - key: FLASK_ENV
+        value: production
