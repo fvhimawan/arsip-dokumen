@@ -6,3 +6,4 @@ python-dotenv==1.0.1
 Werkzeug==2.3.7
 dateparser==1.2.0
 spacy==3.6.1
+gunicorn==21.2.0
