@@ -1,167 +1,42 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Batch Upload Dokumen PDF</title>
-
-    <!-- Bootstrap 5 (lokal/CDN sesuai proyek Anda) -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        integrity="sha384‑9ndCyUaIbzAi2FUVXJi0CjmCapSmO7j5j1p6ZmKp6bKkrX8FF2YybQEgQJ4kGNnN"
-        crossorigin="anonymous"
-    >
+  <meta charset="UTF-8">
+  <title>Batch Upload PDFs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body class="bg‑light">
+<body class="container mt-4">
 
-    <!-- ░░ Header /Navbar ░░ -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('list_documents') }}">Arsip Dokumen</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"
-                    aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+  <h2>📦 Batch Upload PDFs</h2>
 
-            <div class="collapse navbar-collapse" id="navMain">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('upload_form') }}">Upload Tunggal</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page"
-                           href="{{ url_for('batch_upload_form') }}">Batch Upload</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+  <p>Anda bisa unggah:</p>
+  <ul>
+    <li>✅ Beberapa file PDF (gunakan <strong>Ctrl + Klik</strong>)</li>
+    <li>✅ Seluruh isi sebuah folder (jika browser mendukung)</li>
+    <li>✅ Kombinasi keduanya</li>
+  </ul>
 
-    <!-- ░░ Flash messages ░░ -->
-    <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, msg in messages %}
-                <div class="alert alert-{{ 'danger' if category=='error' else category }} alert-dismissible fade show"
-                     role="alert">
-                    {{ msg }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
+  <form action="{{ url_for('batch_upload_bp.upload') }}"
+        method="post"
+        enctype="multipart/form-data"
+        class="border rounded p-4 bg-light">
+
+    <div class="mb-3">
+      <label class="form-label">📄 Pilih file PDF (multi-select):</label>
+      <input type="file" name="documents" multiple class="form-control" />
     </div>
 
-    <!-- ░░ Main Card ░░ -->
-    <div class="container">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h5 class="mb-0">Batch Upload Dokumen PDF</h5>
-            </div>
+    <div class="mb-3">
+      <label class="form-label">📁 Atau pilih folder:</label>
+      <input type="file" name="documents" webkitdirectory class="form-control" />
+      <small class="text-muted">*Fitur ini hanya tersedia di Chrome atau Edge</small>
+    </div>
 
-            <div class="card-body">
+    <button type="submit" class="btn btn-success">Unggah Sekarang</button>
+    <a href="{{ url_for('list_documents') }}" class="btn btn-secondary">Batal</a>
+  </form>
 
-                <!-- ╔══════════════════ Form ══════════════════╗ -->
-                <form action="{{ url_for('batch_upload') }}"
-                      method="POST"
-                      enctype="multipart/form-data"
-                      class="row g-3">
-
-                    <!-- ── File input (multiple) ───────────────── -->
-                    <div class="col-12">
-                        <label for="files" class="form-label fw-semibold">
-                            Pilih Beberapa File PDF
-                        </label>
-                        <input type="file"
-                               class="form-control"
-                               id="files"
-                               name="files"
-                               accept=".pdf"
-                               multiple
-                               required>
-                        <div class="form-text">
-                            Tekan &nbsp;<kbd>Ctrl</kbd>/<kbd>Cmd</kbd> &nbsp;untuk memilih banyak file sekaligus.
-                        </div>
-                    </div>
-
-                    <hr class="my-3">
-
-                    <h6 class="fw-bold">Metadata Default (Opsional)</h6>
-
-                    <!-- ── Kategori ───────────────────────────── -->
-                    <div class="col-md-6">
-                        <label for="category" class="form-label">Kategori</label>
-                        <select id="category" name="category" class="form-select">
-                            <option value="">— Pilih Kategori —</option>
-                            {% for cat in categories if categories %}
-                                <option value="{{ cat }}">{{ cat }}</option>
-                            {% endfor %}
-                            <option value="__custom__">Lainnya …</option>
-                        </select>
-                    </div>
-
-                    <!-- ── Custom kategori (hidden sampai dipilih) ─-->
-                    <div class="col-md-6 d-none" id="customCatWrapper">
-                        <label for="custom_category" class="form-label">Kategori Custom</label>
-                        <input type="text" id="custom_category" name="custom_category"
-                               class="form-control" placeholder="Masukkan kategori baru">
-                    </div>
-
-                    <!-- ── Jenis Dokumen ──────────────────────── -->
-                    <div class="col-md-6">
-                        <label for="doc_type" class="form-label">Jenis Dokumen</label>
-                        <input type="text" id="doc_type" name="doc_type"
-                               class="form-control" placeholder="Mis. Kontrak, Invoice">
-                    </div>
-
-                    <!-- ── Jenis Perusahaan ────────────────────── -->
-                    <div class="col-md-6">
-                        <label for="company_type" class="form-label">Jenis Perusahaan</label>
-                        <select id="company_type" name="company_type" class="form-select">
-                            <option value="">— Pilih Jenis —</option>
-                            {% for ct in company_types %}
-                                <option value="{{ ct }}">{{ ct }}.</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- ── Tombol Submit ───────────────────────── -->
-                    <div class="col-12 mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-cloud-upload me-1"></i> Upload Semua
-                        </button>
-                        <a href="{{ url_for('list_documents') }}" class="btn btn-secondary ms-2">
-                            Batal
-                        </a>
-                    </div>
-                </form>
-                <!-- ╚════════════════ Form End ═════════════════╝ -->
-
-            </div> <!-- /card-body -->
-        </div> <!-- /card -->
-    </div> <!-- /container -->
-
-    <!-- Bootstrap JS -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384‑kQTaBjyX+gf9jDbW5OlBD+T8d32sf94vAxBG+j2d/t7D4T39gN3MUFJ2fBR5iHnN"
-        crossorigin="anonymous">
-    </script>
-
-    <!-- ░░ Small inline script: toggles custom category field ░░ -->
-    <script>
-        const selCat      = document.getElementById('category');
-        const customWrap  = document.getElementById('customCatWrapper');
-        const customInput = document.getElementById('custom_category');
-
-        function toggleCustom() {
-            const custom = selCat.value === '__custom__';
-            customWrap.classList.toggle('d-none', !custom);
-            customInput.required = custom;
-            if (!custom) customInput.value = '';
-        }
-        selCat.addEventListener('change', toggleCustom);
-        document.addEventListener('DOMContentLoaded', toggleCustom);
-    </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

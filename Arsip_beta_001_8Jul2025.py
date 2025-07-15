@@ -7,17 +7,22 @@ from datetime import datetime
 from pdf2image import convert_from_path
 import pytesseract
 
+# === INIT ===
 app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY",  # use env var if set
+                                os.urandom(24).hex())  # else generate random
+
 
 # --- Paths & constants ---
-UPLOAD_FOLDER = 'uploads'
-DB_FILE       = 'database.db'
-COMPANY_TYPES = ['PT', 'CV', 'UD', 'Koperasi', 'Yayasan']
+UPLOAD_FOLDER  = 'uploads'
+DB_FILE        = 'database.db'
+COMPANY_TYPES  = ['PT', 'CV', 'UD', 'Koperasi', 'Yayasan']
+ALLOWED_EXT    = {'.pdf'}
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# --- Date filter ---
+# === Filters ===
 @app.template_filter('datetimeformat')
 def datetimeformat(value, fmt='%d/%b/%Y'):
     try:
@@ -25,7 +30,7 @@ def datetimeformat(value, fmt='%d/%b/%Y'):
     except Exception:
         return value
 
-# --- Ensure DB exists with correct order (post‑migration safety) ---
+# === Helpers ===
 def init_db():
     with sqlite3.connect(DB_FILE) as conn:
         conn.execute('''
@@ -41,12 +46,38 @@ def init_db():
             )
         ''')
 
-# --- Validation ---
+def allowed_file(filename):
+    return os.path.splitext(filename)[1].lower() in ALLOWED_EXT
+
 def company_name_valid(name: str) -> bool:
     pattern = r'^(?:' + '|'.join(re.escape(t) + r'\.?' for t in COMPANY_TYPES) + r')\s'
     return not re.match(pattern, name.strip(), re.IGNORECASE)
 
-# ========== Routes ==========
+def extract_text_from_pdf(path):
+    try:
+        img = convert_from_path(path, first_page=1, last_page=1)[0]
+        return pytesseract.image_to_string(img)
+    except Exception as e:
+        return f"[Gagal ekstraksi: {e}]"
+
+def insert_document_db(meta):
+    with sqlite3.connect(DB_FILE) as conn:
+        conn.execute('''
+            INSERT INTO documents
+            (filename, category, doc_type, company_type,
+             company_name, issued_date, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            meta['filename'],
+            meta.get('category') or meta.get('custom_category'),
+            meta['doc_type'],
+            meta['company_type'],
+            meta['company_name'],
+            meta['issued_date'],
+            meta['notes']
+        ))
+
+# === Routes ===
 @app.route('/')
 def home():
     return redirect('/documents')
@@ -64,11 +95,7 @@ def upload_file():
     path = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(path)
 
-    try:
-        img = convert_from_path(path, first_page=1, last_page=1)[0]
-        extracted_text = pytesseract.image_to_string(img)
-    except Exception as e:
-        extracted_text = f"[Gagal ekstraksi: {e}]"
+    extracted_text = extract_text_from_pdf(path)
 
     return render_template(
         'confirm.html',
@@ -84,26 +111,11 @@ def save_metadata():
     if not company_name_valid(f.get('company_name', '')):
         return "Nama perusahaan tidak boleh diawali dengan jenis perusahaan.", 400
 
-    with sqlite3.connect(DB_FILE) as conn:
-        conn.execute('''
-            INSERT INTO documents
-            (filename, category, doc_type, company_type,
-             company_name, issued_date, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            f.get('filename'),
-            f.get('category') or f.get('custom_category'),
-            f.get('doc_type'),
-            f.get('company_type'),
-            f.get('company_name'),
-            f.get('issued_date'),
-            f.get('notes')
-        ))
+    insert_document_db(f)
     return redirect('/documents')
 
 @app.route('/documents')
 def list_documents():
-    # --- Query params ---
     category      = request.args.get('category', '')
     company_type  = request.args.get('company_type', '')
     company_name  = request.args.get('company_name', '')
@@ -116,13 +128,13 @@ def list_documents():
     if sort_by not in valid_sort: sort_by = 'id'
     if sort_dir not in {'asc','desc'}: sort_dir = 'asc'
 
-    # --- Build SQL ---
     where, params = [], []
     if category:      where.append("category = ?");      params.append(category)
     if company_type:  where.append("company_type = ?");  params.append(company_type)
     if company_name:  where.append("company_name = ?");  params.append(company_name)
     if date_from:     where.append("issued_date >= ?");  params.append(date_from)
     if date_to:       where.append("issued_date <= ?");  params.append(date_to)
+
     sql = "SELECT * FROM documents"
     if where: sql += " WHERE " + " AND ".join(where)
     sql += f" ORDER BY {sort_by} {sort_dir.upper()}"
@@ -130,13 +142,9 @@ def list_documents():
     with sqlite3.connect(DB_FILE) as conn:
         cur = conn.cursor()
         docs = cur.execute(sql, params).fetchall()
-
-        categories = [r[0] for r in cur.execute(
-            "SELECT DISTINCT category FROM documents WHERE category!='' AND category IS NOT NULL")]
-        company_types = [r[0] for r in cur.execute(
-            "SELECT DISTINCT company_type FROM documents WHERE company_type!='' AND company_type IS NOT NULL")]
-        companies = [r[0] for r in cur.execute(
-            "SELECT DISTINCT company_name FROM documents WHERE company_name!='' AND company_name IS NOT NULL")]
+        categories = [r[0] for r in cur.execute("SELECT DISTINCT category FROM documents WHERE category IS NOT NULL AND category != ''")]
+        company_types = [r[0] for r in cur.execute("SELECT DISTINCT company_type FROM documents WHERE company_type IS NOT NULL AND company_type != ''")]
+        companies = [r[0] for r in cur.execute("SELECT DISTINCT company_name FROM documents WHERE company_name IS NOT NULL AND company_name != ''")]
 
     return render_template(
         'list_documents.html',
@@ -180,16 +188,11 @@ def edit_metadata(doc_id):
             conn.commit()
             return redirect('/documents')
 
-        # --- GET
         cur.execute("SELECT * FROM documents WHERE id=?", (doc_id,))
         doc = cur.fetchone()
 
     pdf_path = os.path.join(UPLOAD_FOLDER, doc[1])
-    try:
-        img = convert_from_path(pdf_path, first_page=1, last_page=1)[0]
-        extracted_text = pytesseract.image_to_string(img)
-    except Exception as e:
-        extracted_text = f"[Gagal ekstraksi: {e}]"
+    extracted_text = extract_text_from_pdf(pdf_path)
 
     return render_template(
         'edit.html',
@@ -217,7 +220,11 @@ def delete_document(doc_id):
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
-# --- bootstrap ---
+# === Register batch upload blueprint ===
+from batch_upload import batch_upload_bp
+app.register_blueprint(batch_upload_bp)
+
+# === Bootstrap ===
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)

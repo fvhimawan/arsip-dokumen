@@ -82,8 +82,11 @@
     <div class="col-md-2 d-grid">
       <button class="btn btn-primary mt-4">Terapkan</button>
     </div>
+
+    <!-- ✅ BUTTONS HERE -->
     <div class="col-md text-end">
       <a href="/upload-form" class="btn btn-success mt-4">+ Unggah Dokumen Baru</a>
+      <a href="{{ url_for('batch_upload_bp.show') }}" class="btn btn-primary mt-4 ms-2">📦 Batch Upload PDFs</a>
     </div>
   </div>
 </form>

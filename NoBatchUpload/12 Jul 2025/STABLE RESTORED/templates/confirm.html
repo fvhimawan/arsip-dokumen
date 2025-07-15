@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!-- DEBUG company_types: {{ company_types }} -->
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Konfirmasi dan Tambah Metadata</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+</head>
+<body class="container mt-4">
+
+<h2>📄 Konfirmasi Dokumen &amp; Metadata</h2>
+
+<div class="row">
+    <!-- Metadata Form -->
+    <div class="col-md-6">
+        <form id="metaForm" method="POST" action="/save">
+            <input type="hidden" name="filename" value="{{ filename }}">
+
+            <!-- Kategori -->
+            <div class="mb-3">
+                <label class="form-label">Kategori:</label>
+                <select name="category" class="form-select">
+                    <option value="Legalitas">Legalitas</option>
+                    <option value="Perpajakan">Perpajakan</option>
+                    <option value="Aset">Aset</option>
+                    <option value="Izin Usaha">Izin Usaha</option>
+                    <option value="Perbankan">Perbankan</option>
+                    <option value="Kontrak">Kontrak</option>
+                    <option value="Laporan Keuangan">Laporan Keuangan</option>
+                    <option value="SDM & Ketenagakerjaan">SDM & Ketenagakerjaan</option>
+                    <option value="Asuransi">Asuransi</option>
+                    <option value="Korespondensi">Korespondensi</option>
+                </select>
+                atau Kustom: <input type="text" name="custom_category" class="form-control mt-1">
+            </div>
+
+            <!-- Jenis Dokumen -->
+            <div class="mb-3">
+                <label class="form-label">Jenis Dokumen:</label>
+                <input type="text" name="doc_type" class="form-control" required>
+            </div>
+
+            <!-- Jenis Perusahaan -->
+            <div class="mb-3">
+                <label class="form-label">Jenis Perusahaan:</label>
+                <select id="company_type" name="company_type" class="form-select">
+                    {% for t in company_types %}
+                        <option value="{{ t }}">{{ t }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Nama Perusahaan -->
+            <div class="mb-3">
+                <label class="form-label">Nama Perusahaan <small>(tanpa prefix)</small>:</label>
+                <input id="company_name" type="text" name="company_name" class="form-control" required>
+            </div>
+
+            <!-- Tanggal Terbit -->
+            <div class="mb-3">
+                <label class="form-label">Tanggal Terbit:</label>
+                <input type="date" name="issued_date" class="form-control">
+            </div>
+
+            <!-- Catatan -->
+            <div class="mb-3">
+                <label class="form-label">Catatan:</label>
+                <textarea name="notes" rows="4" class="form-control"></textarea>
+            </div>
+
+            <!-- OCR Preview -->
+            <div class="mb-3">
+                <label class="form-label">📄 Ekstraksi Otomatis Halaman Pertama:</label>
+                <pre class="form-control" style="height: 150px; overflow: auto; white-space: pre-wrap;">{{ extracted_text | safe }}</pre>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Simpan</button>
+            <a href="/upload-form" class="btn btn-secondary">Batal</a>
+        </form>
+    </div>
+
+    <!-- PDF Preview Panel -->
+    <div class="col-md-6">
+        <div class="pdf-controls d-flex justify-content-between mb-2">
+            <div>
+                <button onclick="goPrevious()" class="btn btn-outline-primary btn-sm">⬅️ Sebelumnya</button>
+                <button onclick="goNext()" class="btn btn-outline-primary btn-sm">➡️ Berikutnya</button>
+            </div>
+            <div>
+                <button onclick="zoomOut()" class="btn btn-outline-secondary btn-sm">- Zoom</button>
+                <button onclick="zoomIn()" class="btn btn-outline-secondary btn-sm">+ Zoom</button>
+            </div>
+        </div>
+        <canvas id="pdf-render" style="border: 1px solid #ccc; width: 100%;"></canvas>
+    </div>
+</div>
+
+<script>
+    /* ---------- PDF.js preview ---------- */
+    const url = "/uploads/{{ filename }}";
+    let pdfDoc = null,
+        pageNum = 1,
+        scale = 1.2,
+        canvas = document.getElementById("pdf-render"),
+        ctx = canvas.getContext("2d");
+
+    pdfjsLib.getDocument(url).promise.then(pdf => {
+        pdfDoc = pdf;
+        renderPage(pageNum);
+    });
+
+    function renderPage(num) {
+        pdfDoc.getPage(num).then(page => {
+            const viewport = page.getViewport({ scale });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            page.render({ canvasContext: ctx, viewport });
+        });
+    }
+
+    function goPrevious() { if (pageNum > 1) { pageNum--; renderPage(pageNum); } }
+    function goNext()    { if (pageNum < pdfDoc.numPages) { pageNum++; renderPage(pageNum); } }
+    function zoomIn()    { scale += 0.2; renderPage(pageNum); }
+    function zoomOut()   { if (scale > 0.4) { scale -= 0.2; renderPage(pageNum); } }
+
+    /* ---------- Validation: block prefix in company_name ---------- */
+    document.getElementById('metaForm').addEventListener('submit', function (e) {
+        const type  = document.getElementById('company_type').value.trim().toLowerCase();
+        const name  = document.getElementById('company_name').value.trim().toLowerCase();
+        const prefixPattern = new RegExp('^' + type + '\\.?\\s*');
+        if (prefixPattern.test(name)) {
+            alert('Nama perusahaan tidak boleh diawali dengan "' + type.toUpperCase() + '". Mohon hapus prefix tersebut.');
+            e.preventDefault();
+        }
+    });
+</script>
+
+</body>
+</html>
