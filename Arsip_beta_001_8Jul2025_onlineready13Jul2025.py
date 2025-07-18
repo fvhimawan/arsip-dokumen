@@ -234,7 +234,7 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 
-    @app.route('/reset_index')
+@app.route('/reset_index')
 def reset_index_route():
     import sqlite3
     try:
