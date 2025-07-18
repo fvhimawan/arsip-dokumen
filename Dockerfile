@@ -20,4 +20,6 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Run the Flask app with Gunicorn
-CMD ["gunicorn", "-b", "0.0.0.0:10000", "Arsip_beta_001_8Jul2025_onlineready13Jul2025:app"]
+EXPOSE 10000
+CMD ["gunicorn", "-b", "0.0.0.0:10000", "--timeout", "180", "Arsip_beta_001_8Jul2025_onlineready13Jul2025:app"]
+
