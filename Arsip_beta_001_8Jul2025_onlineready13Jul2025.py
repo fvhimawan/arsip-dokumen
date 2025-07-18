@@ -9,9 +9,7 @@ import pytesseract
 
 # === INIT ===
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY",  # use env var if set
-                                os.urandom(24).hex())  # else generate random
-
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24).hex())
 
 # --- Paths & constants ---
 UPLOAD_FOLDER  = 'uploads'
@@ -220,11 +218,17 @@ def delete_document(doc_id):
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
+@app.route('/healthz')
+def health_check():
+    return "OK", 200
+
 # === Register batch upload blueprint ===
 from batch_upload import batch_upload_bp
 app.register_blueprint(batch_upload_bp)
 
-# === Bootstrap ===
+# === Always initialize DB on app start ===
+init_db()
+
+# === Only run Flask dev server in local ===
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
