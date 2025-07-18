@@ -232,3 +232,18 @@ init_db()
 # === Only run Flask dev server in local ===
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+    @app.route('/reset_index')
+def reset_index_route():
+    import sqlite3
+    try:
+        conn = sqlite3.connect('arsip.db')
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM sqlite_sequence WHERE name='documents'")
+        conn.commit()
+        conn.close()
+        return '✅ Document index reset successfully.'
+    except Exception as e:
+        return f'❌ Error: {e}'
+
