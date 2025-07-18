@@ -1,0 +1,1 @@
+web: gunicorn Arsip_beta_001_8Jul2025_onlineready13Jul2025:app
